@@ -1,39 +1,71 @@
 # SafeTag - Review Service
 
-Ce microservice gère la consultation, l'ajout et la modération (à venir) des avis laissés sur les professionnels de santé.
+Ce microservice gère la consultation et l'ajout des avis laissés sur les professionnels de santé.
 
 ## ⚙️ Fonctionnement et Règles de gestion
 
-* **Identifiant Praticien (RPPS) :** Tout praticien est identifié par son numéro RPPS.
-* **Validation stricte :** Le numéro RPPS doit obligatoirement contenir **exactement 11 chiffres**. Toute requête avec un format invalide est rejetée en amont (Erreur 400).
-* **Pagination :** Les listes d'avis sont paginées pour garantir de bonnes performances.
+* **Pas de notation chiffrée :** Le système ne propose aucune note ou système d'étoiles (Rating). L'évaluation se fait par le commentaire (obligatoire si tags présents) et les tags.
+* **Lieu de consultation (Obligatoire) :** Chaque avis doit **obligatoirement** renseigner le lieu de la rencontre. Cela passe par une liste d'identifiants d'adresses (`addressIds`) ou la mention explicite d'une téléconsultation (`isTeleconsultation`).
+* **Pathologies (DSM-5) :** Les familles de pathologies associées à l'avis sont contrôlées et doivent obligatoirement faire partie d'une énumération basée sur le DSM-5.
+* **Tags (Dimensions sensibles) :** Liste fermée de tags évaluant l'expérience patient sur des critères de discrimination (Positive / Négative). Les catégories sont strictement limitées à : `GENRE`, `POIDS`, `COULEUR_DE_PEAU`, `AGE`, `ORIENTATION_SEXUELLE`, `ETHNICITE`, `APPARENCE`, `TRANSIDENTITE`, `HANDICAP`, `PRECARITE`, `RELIGION`.
+* **Identifiant Praticien (RPPS) :** Le numéro RPPS cible doit obligatoirement contenir **exactement 11 chiffres**.
 
 ---
 
 ## 🚀 Endpoints de l'API
 
 ### 1. Consulter les avis d'un praticien
-
 Récupère la liste paginée des avis pour un professionnel de santé donné.
 
 * **URL :** `/api/v1/reviews/practitioner/{rppsId}`
 * **Méthode :** `GET`
 
-**Paramètres de chemin (Path Variables) :**
-* `rppsId` (String) : Numéro RPPS du praticien (11 chiffres).
+**Paramètres :**
+* `rppsId` (Path) : Numéro RPPS du praticien (11 chiffres).
+* `page` (Query, optionnel) : Numéro de la page (défaut: 0).
+* `size` (Query, optionnel) : Nombre d'éléments par page (défaut: 10).
 
-**Paramètres de requête (Query Params) optionnels :**
-* `page` (int) : Numéro de la page (défaut: 0).
-* `size` (int) : Nombre d'éléments par page (défaut: 10).
-
-**Réponses attendues :**
-
-* **🟢 200 OK** : Retourne la liste paginée des avis.
-* **🟠 400 Bad Request** : Le `rppsId` est mal formaté (ex: longueur différente de 11 chiffres ou caractères non numériques).
-* **🔴 500 Internal Server Error** : Problème côté serveur ou base de données.
+**Réponses :**
+* **🟢 200 OK** : Liste paginée des avis.
+* **🟠 400 Bad Request** : RPPS mal formaté.
 
 ---
 
-## 🛠️ Stack Technique
-* Java / Spring Boot
-* API REST
+### 2. Ajouter un avis
+Permet de soumettre un nouvel avis sur un praticien.
+
+* **URL :** `/api/v1/reviews`
+* **Méthode :** `POST`
+
+**Payload (Body JSON) attendu :**
+```json
+{
+  "rppsId": "12345678901",
+  "comment": "Texte de l'avis...",
+  "addressIds": ["id-adresse-1"], 
+  "isTeleconsultation": false,
+  "pathologies": ["TROUBLE_ANXIEUX", "DEPRESSION"], 
+  "tags": [
+    {
+      "category": "HANDICAP",
+      "vote": "NEGATIVE"
+    },
+    {
+      "category": "GENRE",
+      "vote": "NEUTRAL"
+    }
+  ]
+}
+```
+
+**Réponses :**
+
+* **🟢 201 Created** : Avis enregistré avec succès.
+* **🟠 400 Bad Request** : Données invalides (RPPS incorrect, addressIds vide ET isTeleconsultation à false, pathologie ou tag hors énumération).
+
+---
+### 🛠️ Stack Technique
+
+Java 21 / Spring Boot
+API REST
+Validation (Jakarta Bean Validation)
