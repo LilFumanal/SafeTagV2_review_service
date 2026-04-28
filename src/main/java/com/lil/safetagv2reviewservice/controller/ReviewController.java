@@ -2,6 +2,7 @@ package com.lil.safetagreviewservice.controller;
 
 import com.lil.safetagreviewservice.domain.TagCategory;
 import com.lil.safetagreviewservice.entity.Review;
+import com.lil.safetagreviewservice.models.UpdateReviewRequest;
 import com.lil.safetagreviewservice.service.ReviewService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
@@ -10,7 +11,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/reviews")
@@ -48,5 +52,22 @@ public class ReviewController {
         Map<TagCategory, Double> stats = reviewService.getPractitionerStats(rppsId);
         return ResponseEntity.ok(stats);
     }
+
+    @GetMapping("/user/{userId}")
+    public List<Review> getByUser(@PathVariable UUID userId) {
+        return reviewService.getReviewsByUser(userId);
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<Review> updateReview(
+            @PathVariable UUID id,
+            @RequestHeader("X-User-Id") UUID userId,
+            @RequestBody UpdateReviewRequest request
+    ) {
+        Review updated = reviewService.updateReview(id, userId, request);
+        return ResponseEntity.ok(updated);
+    }
+
+
+
 
 }

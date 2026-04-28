@@ -9,6 +9,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.UUID;
+
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -27,9 +29,8 @@ class ReviewControllerTest {
 
     @Test
     void createReview_ShouldReturn201Created() throws Exception {
-        // Arrange
         Review mockReview = new Review();
-        mockReview.setId(1L);
+        mockReview.setId(java.util.UUID.fromString("123e4567-e89b-12d3-a456-426614174000"));
 
         when(reviewService.createReview(any(Review.class))).thenReturn(mockReview);
 
@@ -38,12 +39,14 @@ class ReviewControllerTest {
         String jsonPayload = """
                 {
                     "rppsId": "12345678910",
-                    "userId": "user-1",
-                    "addressIds": ["cabinet1"],
-                    "comment": "Très bon praticien"
+                    "userId": "%s",
+                    "addressIds": ["%s"],
+                    "isTeleconsultation": false,
+                    "comment": "Très bon praticien. Un commentaire assez long pour la validation.",
+                    "tags": [],
+                    "pathologies": []
                 }
-                """;
-
+                """.formatted( UUID.randomUUID(), UUID.randomUUID());
         mockMvc.perform(post("/api/v1/reviews")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonPayload))
@@ -54,10 +57,10 @@ class ReviewControllerTest {
         // Arrange
         String rppsId = "12345678910";
         Review review = new Review();
-        review.setId(1L);
+        review.setId(java.util.UUID.fromString("123e4567-e89b-12d3-a456-426614174000"));
         review.setRppsId(rppsId);
-        review.setAddressIds(java.util.List.of("cabinet1"));
-        review.setComment("Très bon praticien");
+        review.setAddressIds(java.util.List.of(java.util.UUID.fromString("123e4567-e89b-12d3-a456-426614174000")));
+        review.setComment("Très bon praticien, je recommande.");
 
         org.springframework.data.domain.Page<Review> reviewPage =
                 new org.springframework.data.domain.PageImpl<>(java.util.List.of(review));
@@ -69,8 +72,8 @@ class ReviewControllerTest {
         mockMvc.perform(get("/api/v1/reviews/practitioner/{rppsId}", rppsId)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].id").value(1L))
-                .andExpect(jsonPath("$.content[0].comment").value("Très bon praticien"));
+                .andExpect(jsonPath("$.content[0].id").value("123e4567-e89b-12d3-a456-426614174000"))
+                .andExpect(jsonPath("$.content[0].comment").value("Très bon praticien, je recommande."));
     }
     @Test
     void getReviewsByRppsId_ShouldReturn500WhenServiceFails() throws Exception {
@@ -90,15 +93,15 @@ class ReviewControllerTest {
         // JSON sans adresse et sans téléconsultation (supposé isTeleconsultation: false par défaut)
         String invalidJson = """
         {
-          "rppsId": "123456789",
-          "userId": "user_1",
+          "rppsId": "12345678910",
+          "userId": "%s",
           "comment": "Un commentaire assez long pour passer la validation.",
           "addressIds": [],
           "isTeleconsultation": false,
           "tags": [],
           "pathologies": []
         }
-        """;
+        """.formatted(UUID.randomUUID());
 
         mockMvc.perform(post("/api/v1/reviews")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -112,13 +115,13 @@ class ReviewControllerTest {
     void createReview_ShouldReturn400_WhenInvalidPathology() throws Exception {
         String invalidEnumJson = """
         {
-          "rppsId": "123456789",
-          "userId": "user_1",
+          "rppsId": "12345678910",
+          "userId": "%s",
           "comment": "Un commentaire valide.",
           "isTeleconsultation": true,
           "pathologies": ["PATHOLOGIE_IMPOSSIBLE"]
         }
-        """;
+        """.formatted(UUID.randomUUID());
 
         mockMvc.perform(post("/api/v1/reviews")
                         .contentType(MediaType.APPLICATION_JSON)

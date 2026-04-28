@@ -62,7 +62,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
         Map<String, Object> body = new HashMap<>();
         body.put("error", "Requête invalide");
-        body.put("message", "Format de donnée invalide (vérifiez les valeurs des listes comme les pathologies ou les tags).");
+        body.put("message", "Format de données invalide.");
         body.put("timestamp", LocalDateTime.now());
         body.put("status", HttpStatus.BAD_REQUEST.value());
 
@@ -78,5 +78,15 @@ public class GlobalExceptionHandler {
         body.put("message", ex.getMessage()); // Ex: "getReviewsByPractitioner.rppsId: Le numéro RPPS doit contenir..."
 
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<Map<String, Object>> handleIllegalState(IllegalStateException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.FORBIDDEN.value());
+        body.put("error", "Accès refusé");
+        body.put("message", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
     }
 }

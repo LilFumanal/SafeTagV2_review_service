@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Entity
 @Getter
 @Setter
@@ -14,7 +16,7 @@ public class ReviewTag {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private UUID id;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -24,12 +26,10 @@ public class ReviewTag {
     @Column(nullable = false)
     private TagVote vote;
 
-    // La relation ManyToOne vers la classe Review (que nous allons créer juste après)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "review_id", nullable = false)
     private Review review;
 
-    // Constructeurs, Getters et Setters
     public ReviewTag() {}
 
     public ReviewTag(TagCategory category, TagVote vote, Review review) {

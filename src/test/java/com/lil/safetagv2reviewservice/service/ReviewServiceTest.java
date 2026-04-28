@@ -1,5 +1,6 @@
 package com.lil.safetagreviewservice.service;
 
+import com.lil.safetagreviewservice.client.RppsClient;
 import com.lil.safetagreviewservice.domain.TagCategory;
 import com.lil.safetagreviewservice.domain.TagVote;
 import com.lil.safetagreviewservice.entity.Review;
@@ -7,16 +8,14 @@ import com.lil.safetagreviewservice.entity.ReviewTag;
 import com.lil.safetagreviewservice.exception.ResourceNotFoundException;
 import com.lil.safetagreviewservice.repository.ReviewRepository;
 import com.lil.safetagreviewservice.repository.ReviewTagRepository;
+import org.apache.catalina.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -31,6 +30,15 @@ class ReviewServiceTest {
     @Mock
     private ReviewTagRepository reviewTagRepository;
 
+    @Mock
+    private com.lil.safetagreviewservice.client.UserClient userClient;
+
+    @Mock
+    private com.lil.safetagreviewservice.client.ModerationClient moderationClient;
+
+    @Mock
+    private RppsClient rppsClient;
+
     @InjectMocks
     private ReviewService reviewService;
 
@@ -40,8 +48,13 @@ class ReviewServiceTest {
         Review review = new Review();
         ReviewTag tag1 = new ReviewTag();
         ReviewTag tag2 = new ReviewTag();
+        review.setRppsId("12345678910");
         review.setTags(List.of(tag1, tag2));
+        review.setUserId(java.util.UUID.randomUUID());
+        review.setComment("Un commentaire tout à fait correct");
 
+        when(userClient.userExists(any(UUID.class))).thenReturn(true);
+        when(moderationClient.isReviewValid(any(String.class))).thenReturn(true);
         when(reviewRepository.save(any(Review.class))).thenReturn(review);
 
         // Exécution (Act)
@@ -57,7 +70,7 @@ class ReviewServiceTest {
     @Test
     void getReviewById_ShouldReturnReview_WhenFound() {
         // Arrange
-        Long reviewId = 1L;
+        UUID reviewId = java.util.UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
         Review review = new Review();
         review.setId(reviewId);
 
@@ -75,7 +88,7 @@ class ReviewServiceTest {
     @Test
     void getReviewById_ShouldThrowException_WhenNotFound() {
         // Arrange
-        Long reviewId = 1L;
+        UUID reviewId = java.util.UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
         when(reviewRepository.findById(reviewId)).thenReturn(Optional.empty());
 
         // Act & Assert
@@ -86,7 +99,7 @@ class ReviewServiceTest {
     @Test
     void getPractitionerStats_ShouldCalculateCorrectPercentages() {
         // Arrange
-        String rppsId = "123456789";
+        String rppsId = "12345678910";
 
         // Utilisation dynamique des vraies valeurs de l'enum
         TagCategory category1 = TagCategory.values()[0];
@@ -126,7 +139,7 @@ class ReviewServiceTest {
     @Test
     void getReviewsByRppsId_ShouldReturnPagedReviews() {
         // Arrange
-        String rppsId = "123456789";
+        String rppsId = "12345678910";
         int page = 0;
         int size = 10;
 

@@ -3,6 +3,7 @@ import com.lil.safetagreviewservice.domain.PathologyFamily;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,6 +11,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -19,7 +21,7 @@ public class Review {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private UUID id;
 
     // --- Identifiants externes (Microservices) ---
     @Column(nullable = false)
@@ -27,11 +29,11 @@ public class Review {
     private String rppsId;
 
     @Column(nullable = false)
-    @NotBlank(message = "L'identifiant de l'auteur est obligatoire")
-    private String userId;
+    @NotNull(message = "L'identifiant de l'auteur est obligatoire")
+    private UUID userId;
 
     @Column(nullable = false)
-    private List<String> addressIds;
+    private List<UUID> addressIds;
     private boolean isTeleconsultation = false;
 
     // --- Données de l'avis ---
