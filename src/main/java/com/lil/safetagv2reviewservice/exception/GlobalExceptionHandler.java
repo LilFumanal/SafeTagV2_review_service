@@ -1,4 +1,4 @@
-package com.lil.safetagreviewservice.exception;
+package com.lil.safetagv2reviewservice.exception;
 
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;

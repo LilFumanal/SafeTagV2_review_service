@@ -1,4 +1,4 @@
-package com.lil.safetagreviewservice.domain;
+package com.lil.safetagv2reviewservice.domain;
 
 public enum PathologyFamily {
     ANXIETY("Anxiété et troubles liés au stress", "L’anxiété est un sentiment de nervosité, d’inquiétude ou de malaise qui fait partie de l’expérience humaine normale. Elle est également présente dans de nombreuses affections mentales, y compris le trouble anxieux généralisé, le trouble panique et les phobies. Bien que chacun de ces troubles soit différent, ils se caractérisent tous par une souffrance et un dysfonctionnement spécifiquement liés à l’anxiété et la peur."),

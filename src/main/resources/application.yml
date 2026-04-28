@@ -6,7 +6,7 @@ spring:
     name: review-service
 
   datasource:
-    url: jdbc:postgresql://localhost:5433/safetag_reviews
+    url: jdbc:postgresql://localhost:5433/reviews
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
@@ -18,3 +18,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+services:
+  moderationService: http://localhost:8083/api/v1/moderation
+  userService: http://localhost:8084/api/v1/users
+  rppsService: http://localhost:8081/api/v1/practitioners

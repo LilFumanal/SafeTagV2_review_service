@@ -1,9 +1,9 @@
-package com.lil.safetagreviewservice.controller;
+package com.lil.safetagv2reviewservice.controller;
 
-import com.lil.safetagreviewservice.domain.TagCategory;
-import com.lil.safetagreviewservice.entity.Review;
-import com.lil.safetagreviewservice.models.UpdateReviewRequest;
-import com.lil.safetagreviewservice.service.ReviewService;
+import com.lil.safetagv2reviewservice.domain.TagCategory;
+import com.lil.safetagv2reviewservice.entity.Review;
+import com.lil.safetagv2reviewservice.models.UpdateReviewRequest;
+import com.lil.safetagv2reviewservice.service.ReviewService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import org.springframework.data.domain.Page;
@@ -53,7 +53,7 @@ public class ReviewController {
         return ResponseEntity.ok(stats);
     }
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("/{userId}")
     public List<Review> getByUser(@PathVariable UUID userId) {
         return reviewService.getReviewsByUser(userId);
     }
@@ -67,7 +67,11 @@ public class ReviewController {
         return ResponseEntity.ok(updated);
     }
 
-
-
+    @PostMapping("/{id}/report")
+    public ResponseEntity<Void> reportReview(@PathVariable UUID id,
+                                             @RequestHeader(value = "Authorization", required = true) String authHeader) {
+        reviewService.reportReview(id);
+        return ResponseEntity.ok().build();
+    }
 
 }

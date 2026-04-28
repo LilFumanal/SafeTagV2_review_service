@@ -3,30 +3,20 @@ POST http://localhost:8082/api/v1/reviews
 Content-Type: application/json
 
 {
-  "rppsId": "123456788",
-  "userId": "user_2",
-  "addressIds": ["cabinet_3"],
-  "comment": "bof",
-  "tags": [
-    {
-      "category": "HANDICAP",
-      "vote": "NEGATIVE"
-    },
-    {
-      "category": "GENRE",
-      "vote": "POSITIVE"
-    }
-  ]
+  "rppsId": "12345678899",
+  "userId": "u123e4567-e89b-12d3-a456-426614174000",
+  "addressIds": ["123e4567-e89b-12d3-a456-426614174001"],
+  "comment": "Test minimal"
 }
 ### Créer un avis 2
 POST http://localhost:8082/api/v1/reviews
 Content-Type: application/json
 
 {
-  "rppsId": "123456788",
-  "userId": "user_3",
-  "addressIds": ["cabinet_3"],
-  "comment": "bof",
+  "rppsId": "12345678899",
+  "userId": "123e4567-e89b-12d3-a456-426614174000",
+  "addressIds": ["123e4567-e89b-12d3-a456-426614174001"],
+  "comment": "bof, un con je vous jure",
   "tags": [
     {
       "category": "HANDICAP",
@@ -44,8 +34,8 @@ Content-Type: application/json
 
 {
   "rppsId": "123456788",
-  "userId": "user_3",
-  "addressIds": ["cabinet_3"],
+  "userId": "123e4567-e89b-12d3-a456-426614174000",
+  "addressIds": ["123e4567-e89b-12d3-a456-426614174000"],
   "comment": "moyen",
   "tags": [
     {

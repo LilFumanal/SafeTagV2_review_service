@@ -1,4 +1,4 @@
-package com.lil.safetagreviewservice.domain;
+package com.lil.safetagv2reviewservice.domain;
 
 public enum TagCategory {
     GENRE,

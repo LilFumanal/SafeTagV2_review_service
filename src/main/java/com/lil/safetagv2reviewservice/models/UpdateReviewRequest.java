@@ -1,7 +1,7 @@
-package com.lil.safetagreviewservice.models;
+package com.lil.safetagv2reviewservice.models;
 
-import com.lil.safetagreviewservice.domain.PathologyFamily;
-import com.lil.safetagreviewservice.entity.ReviewTag;
+import com.lil.safetagv2reviewservice.domain.PathologyFamily;
+import com.lil.safetagv2reviewservice.entity.ReviewTag;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -1,16 +1,17 @@
-package com.lil.safetagreviewservice.service;
+package com.lil.safetagv2reviewservice.service;
 
-import com.lil.safetagreviewservice.client.ModerationClient;
-import com.lil.safetagreviewservice.client.RppsClient;
-import com.lil.safetagreviewservice.client.UserClient;
-import com.lil.safetagreviewservice.domain.TagCategory;
-import com.lil.safetagreviewservice.domain.TagVote;
-import com.lil.safetagreviewservice.entity.Review;
-import com.lil.safetagreviewservice.entity.ReviewTag;
-import com.lil.safetagreviewservice.exception.ResourceNotFoundException;
-import com.lil.safetagreviewservice.models.UpdateReviewRequest;
-import com.lil.safetagreviewservice.repository.ReviewRepository;
-import com.lil.safetagreviewservice.repository.ReviewTagRepository;
+import com.lil.safetagv2reviewservice.client.ModerationClient;
+import com.lil.safetagv2reviewservice.client.RppsClient;
+import com.lil.safetagv2reviewservice.client.UserClient;
+import com.lil.safetagv2reviewservice.domain.ReviewStatus;
+import com.lil.safetagv2reviewservice.domain.TagCategory;
+import com.lil.safetagv2reviewservice.domain.TagVote;
+import com.lil.safetagv2reviewservice.entity.Review;
+import com.lil.safetagv2reviewservice.entity.ReviewTag;
+import com.lil.safetagv2reviewservice.exception.ResourceNotFoundException;
+import com.lil.safetagv2reviewservice.models.UpdateReviewRequest;
+import com.lil.safetagv2reviewservice.repository.ReviewRepository;
+import com.lil.safetagv2reviewservice.repository.ReviewTagRepository;
 import feign.FeignException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -59,11 +60,16 @@ public class ReviewService {
                 tag.setReview(review); // Indispensable pour que la clé étrangère soit remplie
             }
         }
-        boolean isValid = moderationClient.isReviewValid(review.getComment());
 
-        if (!isValid) {
-            throw new IllegalArgumentException("Le contenu de l'avis ne respecte pas nos règles de modération.");
+        if (review.getComment() != null && !review.getComment().isBlank()) {
+            // On délègue la décision du statut au moderation-service
+            ReviewStatus status = moderationClient.moderateComment(review.getComment());
+            review.setStatus(status);
+        } else {
+            // Un avis sans texte (juste une note) est approuvé par défaut
+            review.setStatus(ReviewStatus.APPROVED);
         }
+
         return reviewRepository.save(review);
     }
 
@@ -97,14 +103,13 @@ public class ReviewService {
     }
 
     public Page<Review> getReviewsByRppsId(String rppsId, int page, int size) {
-        // Tri par défaut : du plus récent au plus ancien
-        // (Modifie "createdAt" par le nom exact de ton champ de date si différent)
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
 
-        return reviewRepository.findByRppsId(rppsId, pageable);
+        return reviewRepository.findByRppsIdAndStatus(rppsId, ReviewStatus.APPROVED, pageable);
     }
 
     public Review getReviewById(UUID id) {
+
         return reviewRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Avis introuvable pour l'ID : " + id));
     }
@@ -138,8 +143,31 @@ public class ReviewService {
         review.setAddressIds(
                 request.getAddressIds() != null ? new ArrayList<>(request.getAddressIds()) : new ArrayList<>()
         );
+        if (review.getComment() != null && !review.getComment().isBlank()) {
+            ReviewStatus status = moderationClient.moderateComment(review.getComment());
+            review.setStatus(status);
+        } else {
+            review.setStatus(ReviewStatus.APPROVED);
+        }
 
         return reviewRepository.save(review);
+
     }
 
+    public void reportReview(UUID reviewId) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new RuntimeException("Avis introuvable"));
+
+        // On bascule le statut pour le masquer immédiatement
+        review.setStatus(ReviewStatus.REPORTED);
+        reviewRepository.save(review);
+    }
+
+    public void rejectReview(Long reviewId, String reason) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new RuntimeException("Avis non trouvé"));
+        review.setStatus(ReviewStatus.REJECTED); // Ou utilise un Enum si tu en as un
+        review.setRejectionReason(reason);
+        reviewRepository.save(review);
+    }
 }

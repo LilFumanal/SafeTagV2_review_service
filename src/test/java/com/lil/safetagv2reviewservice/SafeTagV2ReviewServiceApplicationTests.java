@@ -1,4 +1,4 @@
-package com.lil.safetagreviewservice;
+package com.lil.safetagv2reviewservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

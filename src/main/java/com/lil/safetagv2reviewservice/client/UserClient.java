@@ -1,4 +1,4 @@
-package com.lil.safetagreviewservice.client;
+package com.lil.safetagv2reviewservice.client;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

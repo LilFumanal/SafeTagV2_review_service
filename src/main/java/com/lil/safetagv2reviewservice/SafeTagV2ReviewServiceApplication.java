@@ -1,4 +1,4 @@
-package com.lil.safetagreviewservice;
+package com.lil.safetagv2reviewservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

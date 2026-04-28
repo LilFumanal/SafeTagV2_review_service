@@ -1,6 +1,7 @@
-package com.lil.safetagreviewservice.repository;
+package com.lil.safetagv2reviewservice.repository;
 
-import com.lil.safetagreviewservice.entity.Review;
+import com.lil.safetagv2reviewservice.domain.ReviewStatus;
+import com.lil.safetagv2reviewservice.entity.Review;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,6 +18,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     Page<Review> findByRppsId(String rppsId, Pageable pageable);
     boolean existsByUserIdAndRppsId(UUID userId, String rppsId);
     List<Review> findByUserId(UUID userId);
+    Page<Review> findByRppsIdAndStatus(String rppsId, ReviewStatus status, Pageable pageable);
 
     Optional<Review> findById(UUID reviewId);
 

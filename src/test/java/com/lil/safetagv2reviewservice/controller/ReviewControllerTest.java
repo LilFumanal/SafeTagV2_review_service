@@ -1,7 +1,7 @@
-package com.lil.safetagreviewservice.controller; // Vérifie que c'est le bon package
+package com.lil.safetagv2reviewservice.controller; // Vérifie que c'est le bon package
 
-import com.lil.safetagreviewservice.entity.Review;
-import com.lil.safetagreviewservice.service.ReviewService;
+import com.lil.safetagv2reviewservice.entity.Review;
+import com.lil.safetagv2reviewservice.service.ReviewService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;

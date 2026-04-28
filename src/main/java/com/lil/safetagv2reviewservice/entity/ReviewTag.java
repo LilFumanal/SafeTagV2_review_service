@@ -1,7 +1,7 @@
-package com.lil.safetagreviewservice.entity;
+package com.lil.safetagv2reviewservice.entity;
 
-import com.lil.safetagreviewservice.domain.TagCategory;
-import com.lil.safetagreviewservice.domain.TagVote;
+import com.lil.safetagv2reviewservice.domain.TagCategory;
+import com.lil.safetagv2reviewservice.domain.TagVote;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +15,8 @@ import java.util.UUID;
 public class ReviewTag {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue // Hibernate détectera automatiquement qu'il doit générer un UUID
+    @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
     @Enumerated(EnumType.STRING)

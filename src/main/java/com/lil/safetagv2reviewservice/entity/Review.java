@@ -1,5 +1,6 @@
-package com.lil.safetagreviewservice.entity;
-import com.lil.safetagreviewservice.domain.PathologyFamily;
+package com.lil.safetagv2reviewservice.entity;
+import com.lil.safetagv2reviewservice.domain.PathologyFamily;
+import com.lil.safetagv2reviewservice.domain.ReviewStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
@@ -20,7 +21,8 @@ import java.util.UUID;
 public class Review {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
+    @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
     // --- Identifiants externes (Microservices) ---
@@ -80,4 +82,10 @@ public class Review {
         // Valide si c'est une téléconsultation OU s'il y a au moins une adresse
         return this.isTeleconsultation || hasAddress;
     }
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ReviewStatus status = ReviewStatus.APPROVED;
+
+    @Column(name = "rejection_reason", length = 500)
+    private String rejectionReason;
 }

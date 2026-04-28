@@ -1,14 +1,13 @@
-package com.lil.safetagreviewservice.service;
+package com.lil.safetagv2reviewservice.service;
 
-import com.lil.safetagreviewservice.client.RppsClient;
-import com.lil.safetagreviewservice.domain.TagCategory;
-import com.lil.safetagreviewservice.domain.TagVote;
-import com.lil.safetagreviewservice.entity.Review;
-import com.lil.safetagreviewservice.entity.ReviewTag;
-import com.lil.safetagreviewservice.exception.ResourceNotFoundException;
-import com.lil.safetagreviewservice.repository.ReviewRepository;
-import com.lil.safetagreviewservice.repository.ReviewTagRepository;
-import org.apache.catalina.User;
+import com.lil.safetagv2reviewservice.client.RppsClient;
+import com.lil.safetagv2reviewservice.domain.TagCategory;
+import com.lil.safetagv2reviewservice.domain.TagVote;
+import com.lil.safetagv2reviewservice.entity.Review;
+import com.lil.safetagv2reviewservice.entity.ReviewTag;
+import com.lil.safetagv2reviewservice.exception.ResourceNotFoundException;
+import com.lil.safetagv2reviewservice.repository.ReviewRepository;
+import com.lil.safetagv2reviewservice.repository.ReviewTagRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,10 +30,10 @@ class ReviewServiceTest {
     private ReviewTagRepository reviewTagRepository;
 
     @Mock
-    private com.lil.safetagreviewservice.client.UserClient userClient;
+    private com.lil.safetagv2reviewservice.client.UserClient userClient;
 
     @Mock
-    private com.lil.safetagreviewservice.client.ModerationClient moderationClient;
+    private com.lil.safetagv2reviewservice.client.ModerationClient moderationClient;
 
     @Mock
     private RppsClient rppsClient;
